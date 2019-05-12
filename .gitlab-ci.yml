@@ -31,6 +31,7 @@ test_ui:
     - coverage report --include ui/ui.py
 
 deploy_job:
+  image: docker:stable
   stage: deploy
   tags: 
     - dev
