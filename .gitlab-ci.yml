@@ -35,8 +35,13 @@ deploy_job:
   services:
     - docker:dind
   stage: deploy
+  variables:
+    DOCKER_HOST: tcp://35.240.85.127:2376/
+    DOCKER_DRIVER: overlay2
   tags: 
     - dev
+  before_script:
+    - docker info
   script:
     - echo 'Deploy app&ui'
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
