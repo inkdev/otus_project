@@ -32,11 +32,14 @@ test_ui:
 
 deploy_job:
   image: docker:stable
+  services:
+    - docker:dind
   stage: deploy
   tags: 
     - dev
   script:
     - echo 'Deploy app&ui'
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
     - docker build -t inks/crawler-ui:1.0 ./crawler-ui
     - docker push inks/crawler-ui:1.0
     
