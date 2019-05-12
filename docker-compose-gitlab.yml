@@ -1,0 +1,30 @@
+---
+#Installation https://docs.gitlab.com/omnibus/docker/README.html#install-gitlab-using-docker-compose
+version: '3.3'
+services:
+ gitlab-ci:
+  image: 'gitlab/gitlab-ce:latest'
+  restart: always
+  hostname: 'crawler-gitlab'
+  environment:
+    GITLAB_OMNIBUS_CONFIG: |
+      external_url 'http://35.240.85.127:8900'
+      gitlab_rails['gitlab_shell_ssh_port'] = 2224
+  ports:
+    - '8900:8900'
+    - '443:443'
+    - '2224:2224'
+  volumes:
+    - '/srv/gitlab/config:/etc/gitlab'
+    - '/srv/gitlab/logs:/var/log/gitlab'
+    - '/srv/gitlab/data:/var/opt/gitlab'
+  networks:
+    front_net:
+      aliases:
+        - gitlab
+
+networks:
+  front_net:
+      ipam:
+        config:
+          - subnet: 10.0.1.0/24

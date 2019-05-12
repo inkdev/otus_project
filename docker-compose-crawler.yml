@@ -1,0 +1,77 @@
+---
+version: '3.3'
+services:
+
+  mongo_db:
+    env_file: .env
+    image: mongo:${MONGODB_VERSION}
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+    networks:
+      back_net:
+       aliases:
+       - mongo_db
+
+  crawler:
+    env_file: .env
+    image: ${USERNAME}/crawler-app:${CRAWLERAPP_VERSION}
+    restart: always
+    networks:
+      back_net:
+       aliases:
+       - crawler
+      front_net:
+       aliases:
+       - crawler
+    depends_on:
+      - mongo_db
+      - rabbit_mq
+
+  ui:
+    env_file: .env
+    image: ${USERNAME}/crawler-ui:${CRAWLERUI_VERSION}
+    restart: always
+    ports:
+      - '8000:8000'
+    networks:
+      back_net:
+       aliases:
+       - crawler-ui
+      front_net:
+       aliases:
+       - crawler-ui
+    depends_on:
+      - mongo_db
+
+  rabbit_mq:
+    env_file: .env
+    image: rabbitmq:${RABBITMQ_VERSION}
+    hostname: rabbitmq
+#    volumes:
+#      - rabbit_mq:/var/lib/rabbitmq:rw
+    networks:
+      back_net:
+       aliases:
+       - rabbitmq
+    ports:
+      - "4369:4369"
+      - "5672:5672"
+      - "15671:15671"
+      - "15672:15672"
+      - "25672:25672"
+      - "35197:35197"
+    
+volumes:
+  mongo_db:
+  rabbit_mq:
+networks:
+  back_net:
+    ipam:
+      config:
+        - subnet: 10.0.1.0/24
+  front_net:
+    ipam:
+      config:
+        - subnet: 10.0.2.0/24
+
