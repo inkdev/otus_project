@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - deploy
 
 build_job:
   stage: build
@@ -28,3 +29,13 @@ test_ui:
     - python -m unittest discover -s tests/
     - coverage run -m unittest discover -s tests/
     - coverage report --include ui/ui.py
+
+deploy_job:
+  stage: deploy
+  tags: 
+    - dev
+  script:
+    - echo 'Deploy app&ui'
+    - docker build -t inks/crawler-ui:1.0 ./crawler-ui
+    - docker push inks/crawler-ui:1.0
+    
