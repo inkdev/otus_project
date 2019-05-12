@@ -35,9 +35,6 @@ deploy_job:
   services:
     - docker:dind
   stage: deploy
-  variables:
-    DOCKER_HOST: tcp://localhost:2375/
-    DOCKER_DRIVER: overlay2
   tags: 
     - dev
   before_script:
