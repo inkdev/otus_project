@@ -40,6 +40,7 @@ deploy_job:
   script:
     - echo 'Deploy app&ui'
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
-    - docker build -t inks/crawler-ui:1.0 ./crawler-ui
+    - cd crawler-ui
+    - docker build -t inks/crawler-ui:1.0 .
     - docker push inks/crawler-ui:1.0
     
