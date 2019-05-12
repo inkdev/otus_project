@@ -1,5 +1,6 @@
 stages:
   - test
+
 test_app:
   stage: test
   tags: 
@@ -10,3 +11,14 @@ test_app:
     - python3 -m unittest discover -s tests/ 
     - coverage run -m unittest discover -s tests/ 
     - coverage report --include crawler/crawler.py
+
+test_ui:
+  stage: test
+  tags: 
+    - dev
+  script:
+    - cd crawler-ui
+    - pip install -r requirements.txt -r requirements-test.txt
+    - python -m unittest discover -s tests/
+    - coverage run -m unittest discover -s tests/
+    - coverage report --include ui/ui.py
