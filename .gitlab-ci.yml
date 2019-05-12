@@ -1,5 +1,11 @@
 stages:
+  - build
   - test
+
+build_job:
+  stage: build
+  script:
+    - echo 'Building'
 
 test_app:
   stage: test
