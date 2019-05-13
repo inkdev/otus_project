@@ -1,0 +1,57 @@
+{
+    "variables": {
+        "project_id": null,
+        "disk_size": "50",
+        "disk_type": "pd-standard",
+        "image_description": "crawler-full",
+        "machine_type": "n1-standard-1",
+        "network": "default",
+        "source_image_family": null,
+        "tags": "crawler",
+        "zone": "europe-west1-c"
+    },
+    "builders": [
+        {
+            "type": "googlecompute",
+            "project_id": "{{ user `project_id` }}",
+            "disk_size": "{{ user `disk_size` }}",
+            "disk_type": "{{ user `disk_type` }}",
+            "image_name": "crawler-full-{{timestamp}}",
+            "image_family": "crawler-full",
+            "image_description": "{{ user `image_description` }}",
+            "machine_type": "{{ user `machine_type` }}",
+            "network": "{{ user `network` }}",
+            "source_image_family": "{{ user `source_image_family` }}",
+            "ssh_username": "appuser",
+            "tags": "{{ user `tags` }}",
+            "zone": "{{ user `zone` }}"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "../docker-compose-crawler.yml",
+            "destination": "/home/appuser/docker-compose-crawler.yml"
+        },
+        {
+            "type": "file",
+            "source": "../docker-compose-monitoring.yml",
+            "destination": "/home/appuser/docker-compose-monitoring.yml"
+        },
+        {
+            "type": "file",
+            "source": "../docker-compose-gitlab.yml",
+            "destination": "/home/appuser/docker-compose-gitlab.yml"
+        },
+	{
+            "type": "file",
+            "source": "../.env",
+            "destination": "/home/appuser/.env"
+        },
+	{
+            "type": "shell",
+            "script": "../install_docker_script.sh"
+        }
+    ]
+}
+

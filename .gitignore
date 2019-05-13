@@ -1,2 +1,6 @@
 .terraform
 .tfstate
+.tfvars
+.env
+packer/variables.json
+

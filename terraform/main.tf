@@ -39,7 +39,7 @@ resource "google_compute_instance" "crawler-host" {
   }
 
   provisioner "remote-exec" {
-    script = "../install_docker_script.sh"
+    script = "../install_playbook.sh"
   }
 }
 
