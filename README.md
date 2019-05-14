@@ -20,12 +20,60 @@ OTUS-project
 
 
 # Как запустить проект
-
+1. Настройка GCP. 
+ - Создать проект в GCP
+ - Создать входящие правила фаерволла для разрешения работы(пока не завернуто в Terraform)
+  - rabbitmq-web-access: tcp-15672
+  - crawler-ui: tcp-8000
+  - crawler-monitoring: tcp-9090, tcp-3000, tcp-8080
+  - gitlab-web: 8900
+ - Создаем метаданные проекта, экспортируем публичный ключ appuser.pub в метаданные проекта
+2. Настройка и автоматический запуск инфраструктуры. Меняем файлы конфигурации 
+ - /terraform  mv terraform.tfvars.example terraform.tfvars заполняем поля в соответствии с данными своего проекта
+ - /packer mv variables.example.json variables.json заполняем поля в соответствии с данными своего проекта
+ - /.env mv .env.example .env заполняем поля в соответствии с данными своего проекта
+3. Переходим в /terraform, выполняем
+```
+terraform init && terraform apply --auto-approve=true
+```
+- Дожидаемся поднятия инфраструктуры(WARN: gitlab подниматеся около 7-10 минут)
+- Проверяем доступ к приложениям 
+ 
 Доступ к приложениям
 Crawler: http://ip:8000
 Gitlab: http://ip:8900
 Prometheus: http://ip:9090
 Grafana: http://ip:3000
+Cadvisor: http://ip:8080
+- Проверяем работоспособность приложения Crawler, вводим слово или фразу, получаем список ссылок
+4. Настройка gitlab
+ - Заходим по адресу приложения gitlab http://ip:8900, устанавливаем логин/пароль root/secretsecret
+ - Создаем группу crawler и проект crawler-project
+ - В папке проекта выполняем
+ '''
+ git init
+ git remote add origin http://ip:8900/crawler/crawler-project.git
+ git add .
+ git commit -m 'Initial commit'
+ git push -u origin master
+ ''' 
+ - Для деплоя контейнеров необходима учетная запись на docker-hub. Создаем ее в Settings-CI/CD-Variables
+ CI_REGISTRY_USER
+ CI_REGISTRY_PASSWORD 
+ - Для запуска процесса CI/CD необходим раннер. Заходим по ssh на crawler хост, выполняем
+ ```
+ docker run -d --name gitlab-runner --restart always \
+-v /srv/gitlab-runner/config:/etc/gitlab-runner \
+-v /var/run/docker.sock:/var/run/docker.sock \
+gitlab/gitlab-runner:latest 
+ ```
+- Регистрируем раннер 
+
+5. Проверка мониторинга
+ - Prometheus. Проверяем работоспособность метрик
+ - Grafana. Заходим по адресу http://ip:3000. login/password admin/secretsecret. Проверяем наличие дашбоарда Crawler_metrics с графиками 'Web page generate time bucket' и 'Count of served web-pages'. Не забыть сгененрировать страничку в приложении Crawler и поставить источник метрик в графиках
+ - Cadvisor. Проверяем состояние контейнеров
+
 
 # Структура проекта
 
