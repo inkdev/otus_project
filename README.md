@@ -59,7 +59,13 @@ Cadvisor: http://ip:8080
  ``` 
  - Для деплоя контейнеров необходима учетная запись на docker-hub. Создаем ее в Settings-CI/CD-Variables
  CI_REGISTRY_USER
- CI_REGISTRY_PASSWORD 
+ CI_REGISTRY_PASSWORD
+ - Изменяем external_ip для gitlab(не автоматизировано в Terraform)
+```
+docker exec -it appuser_gitlab-ci_1 /bin/bash
+echo "GITLAB_OMNIBUS_CONFIG=external_url 'http://35.233.89.190:8900'" >> /etc/gitlab/gitlab.rb
+gitlab-ctl reconfigure
+``` 
  - Для запуска процесса CI/CD необходим раннер. Заходим по ssh на crawler хост, выполняем
  ```
  docker run -d --name gitlab-runner --restart always \
@@ -67,7 +73,23 @@ Cadvisor: http://ip:8080
 -v /var/run/docker.sock:/var/run/docker.sock \
 gitlab/gitlab-runner:latest 
  ```
-- Регистрируем раннер 
+- Регистрируем раннер
+```
+docker exec -it gitlab-runner gitlab-runner register \
+  --non-interactive \
+  --url "http://ip:8900/" \
+  --registration-token "token" \
+  --tag-list "dev" \
+  --executor "docker" \
+  --request-concurrency 3 \
+  --docker-image python:3.6.0-alpine \
+  --description "crawler-runner" \
+  --run-untagged="true" \
+  --locked="false" \
+  --docker-privileged
+``` 
+- Заходим в pipeline CI/CD, проверяем работоспособность
+
 
 5. Проверка мониторинга
  - Prometheus. Проверяем работоспособность метрик
