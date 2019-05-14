@@ -50,13 +50,13 @@ Cadvisor: http://ip:8080
  - Заходим по адресу приложения gitlab http://ip:8900, устанавливаем логин/пароль root/secretsecret
  - Создаем группу crawler и проект crawler-project
  - В папке проекта выполняем
- '''
+ ```
  git init
  git remote add origin http://ip:8900/crawler/crawler-project.git
  git add .
  git commit -m 'Initial commit'
  git push -u origin master
- ''' 
+ ``` 
  - Для деплоя контейнеров необходима учетная запись на docker-hub. Создаем ее в Settings-CI/CD-Variables
  CI_REGISTRY_USER
  CI_REGISTRY_PASSWORD 
